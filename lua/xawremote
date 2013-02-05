@@ -1,0 +1,48 @@
+print("Starting xawremote... ")
+serverUrl = "http://localhost:8888/"
+--serverUrl = "http://192.168.2.104:8888"
+--serverUrl = "http://84.145.58.17:8888"
+
+function sendRequest(retValue)
+        --request = { retVal = retValue, label = os.getComputerLabel() }
+        local label = os.getComputerLabel()
+		
+		local request = serverUrl..label.."?param=blubb"
+		http.request(request)
+end
+ 
+function wait()
+        print("nothing to do here .. ")
+        os.sleep(1)
+end
+ 
+function waitForAnswer()
+        while true do
+                local event, host, params = os.pullEvent()
+				print(params)
+                if event == "http_failure" then
+                        wait()
+                        sendRequest(false)
+                else
+                   if event == "http_success" then
+                        --local program = params.program
+                        --local args = params.args
+                        if program == "wait" then
+                                wait()
+                        else
+							print ("host: "..host.." params: ")
+							-- params is table
+							print(params[0])
+							for key, value in next, params, nil do
+								print(key, value)
+							end
+                             --   local retVal = shell.run(program, args)
+                        end
+                        sendRequest(retVal)
+                  end
+                end
+        end
+end
+ 
+sendRequest(true)
+waitForAnswer()
