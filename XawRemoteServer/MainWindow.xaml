@@ -1,0 +1,9 @@
+﻿<Window x:Class="XawRemoteServer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="XawRemote" Height="350" Width="525">
+    <DockPanel>
+        <Button Content="start" Click="Start_Click" />
+        <Button Content="send" Click="Send_Click" />
+    </DockPanel>
+</Window>
