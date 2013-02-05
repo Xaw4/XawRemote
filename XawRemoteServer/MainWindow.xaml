@@ -5,5 +5,8 @@
     <DockPanel>
         <Button Content="start" Click="Start_Click" />
         <Button Content="send" Click="Send_Click" />
+        <TextBox Name="ExpressionBox"
+                 IsReadOnly="false" 
+                 AcceptsReturn="True">turtle.forward()</TextBox>
     </DockPanel>
 </Window>

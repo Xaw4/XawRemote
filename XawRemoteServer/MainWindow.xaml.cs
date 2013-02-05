@@ -29,7 +29,7 @@ namespace XawRemoteServer
             InitializeComponent();
            
         }
-
+        String msg=null;
         //TcpListener listener = null;
         HttpListener _listener = null;
         private HttpListener GetListener()
@@ -52,26 +52,37 @@ namespace XawRemoteServer
             Debug.Print("start_click");
 
             //if (listener == null) listener = new TcpListener(8888);
-        
-            
-            
 
-            AsyncCallback callback = MessageRecieved;
-
-            IAsyncResult result =
-                GetListener().BeginGetContext(callback, GetListener());
-
-            Debug.Print("prefixes: ");
-            foreach (String s in GetListener().Prefixes)
+            if (false && GetListener().IsListening)
             {
-                Debug.Print("- "+s);
+                Debug.Print("Listener is listening, action refused");
             }
-            Debug.Print("isListening: " + GetListener().IsListening);
+            else
+            {
+                msg = gettext();
+                Debug.Print("msg: " + msg);
+                AsyncCallback callback = MessageRecieved;
+
+                IAsyncResult result =
+                    GetListener().BeginGetContext(callback, GetListener());
+
+                Debug.Print("prefixes: ");
+                foreach (String s in GetListener().Prefixes)
+                {
+                    Debug.Print("- "+s);
+                }
+                Debug.Print("isListening: " + GetListener().IsListening);
+            }
+            
             
         }
         private void Send_Click(object sender, RoutedEventArgs e)
         {
             Debug.Print("send_click");
+        }
+        public String gettext()
+        {
+            return this.ExpressionBox.Text.ToString();
         }
         private void MessageRecieved(IAsyncResult result)
         {
@@ -90,8 +101,11 @@ namespace XawRemoteServer
             }
             // Obtain a response object.
             HttpListenerResponse response = context.Response;
+
+            
             // Construct a response. 
-            string responseString = "A message";
+            string responseString = msg;// "turtle.forward()";//this.ContentBox.Text; 
+            Debug.Print("ResponseString: "+responseString);
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             // Get a response stream and write the response to it.
             response.ContentLength64 = buffer.Length;
