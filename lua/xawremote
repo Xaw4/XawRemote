@@ -30,12 +30,11 @@ function waitForAnswer()
                         if program == "wait" then
                                 wait()
                         else
-							print ("host: "..host.." params: ")
-							-- params is table
-							print(params[0])
-							for key, value in next, params, nil do
-								print(key, value)
-							end
+							param = params.readAll()
+							print ("host: "..host.." params: "..param)
+							shell.run("lua", param);
+							
+							print(params.readAll())
                              --   local retVal = shell.run(program, args)
                         end
                         sendRequest(retVal)
