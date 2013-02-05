@@ -9,7 +9,13 @@ function sendRequest(retValue)
 		print(request)
 		http.request(request)
 end
- 
+function encode (s)
+  s = string.gsub(s, "([?&=+%c])", function (c)
+		return string.format("%%%02X", string.byte(c))
+	  end)
+  s = string.gsub(s, " ", "+")
+  return s
+end
 function wait()
         print("nothing to do here .. ")
         os.sleep(1)
@@ -18,7 +24,6 @@ end
 function waitForAnswer()
         while true do
                 local event, host, params = os.pullEvent()
-				print(params)
                 if event == "http_failure" then
                         wait()
                         sendRequest("waiting")
@@ -33,13 +38,15 @@ function waitForAnswer()
 							-- print ("host: "..host.." params: "..param)
 							f = assert(loadstring(param, output))
 							
-							local status = pcall(f)
-							if status then 
+							local status = {pcall(f)}
+							if status[1] then 
 								print("successfully called f")
 							else
-								output = "error"
+								print("'"..status[2].."'")
+								-- print(status[3])
+								output = "error:"..encode(status[2])
 							end
-							print("output")
+							print(output)
                         end
                         sendRequest(output)
                   end
