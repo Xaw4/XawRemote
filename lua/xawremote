@@ -1,7 +1,5 @@
 print("Starting xawremote... ")
 serverUrl = "http://localhost:8888/"
---serverUrl = "http://192.168.2.104:8888"
---serverUrl = "http://84.145.58.17:8888"
 
 function sendRequest(retValue)
         --request = { retVal = retValue, label = os.getComputerLabel() }
@@ -32,12 +30,15 @@ function waitForAnswer()
                         else
 							param = params.readAll()
 							print ("host: "..host.." params: "..param)
-							shell.run("lua", param);
+							f = loadstring(param)
+							f()
+							
+							--shell.run("lua", param);
 							
 							print(params.readAll())
                              --   local retVal = shell.run(program, args)
                         end
-                        sendRequest(retVal)
+                        sendRequest(true)
                   end
                 end
         end
