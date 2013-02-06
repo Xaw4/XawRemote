@@ -23,23 +23,23 @@ namespace XawRemoteServer
     public partial class MainWindow : Window
     {
 
+        private String msg=null;
+        private List<string> commandque = new List<string>();
+        private HttpListener _listener = null;
         
         public MainWindow()
         {
             InitializeComponent();
            
         }
-        String msg=null;
-        //TcpListener listener = null;
-        HttpListener _listener = null;
         private HttpListener GetListener()
         {
             if (_listener == null)
             {
                 _listener = new HttpListener();
-                _listener.Prefixes.Add("http://localhost:8888/");
+                //_listener.Prefixes.Add("http://localhost:8888/");
                 //_listener.Prefixes.Add("http://84.145.58.17:8888/");
-                _listener.Prefixes.Add("http://*:8888/");
+                _listener.Prefixes.Add("http://+:8888/cc/");
                 
                 _listener.Start();
             }
@@ -53,27 +53,20 @@ namespace XawRemoteServer
 
             //if (listener == null) listener = new TcpListener(8888);
 
-            if (false && GetListener().IsListening)
-            {
-                Debug.Print("Listener is listening, action refused");
-            }
-            else
-            {
-                msg = gettext();
-                Debug.Print("msg: " + msg);
-                AsyncCallback callback = MessageRecieved;
-
-                IAsyncResult result =
-                    GetListener().BeginGetContext(callback, GetListener());
-
-                Debug.Print("prefixes: ");
-                foreach (String s in GetListener().Prefixes)
-                {
-                    Debug.Print("- "+s);
-                }
-                Debug.Print("isListening: " + GetListener().IsListening);
-            }
             
+            msg = gettext();
+            Debug.Print("msg: " + msg);
+            AsyncCallback callback = MessageRecieved;
+
+            IAsyncResult result =
+                GetListener().BeginGetContext(callback, GetListener());
+
+            Debug.Print("prefixes: ");
+            foreach (String s in GetListener().Prefixes)
+            {
+                Debug.Print("- "+s);
+            }
+            Debug.Print("isListening: " + GetListener().IsListening);
             
         }
         private void Send_Click(object sender, RoutedEventArgs e)
@@ -90,6 +83,7 @@ namespace XawRemoteServer
             HttpListener listener = (HttpListener)result.AsyncState;
             // Call EndGetContext to complete the asynchronous operation.
             HttpListenerContext context = listener.EndGetContext(result);
+            
             HttpListenerRequest request = context.Request;
             Debug.Print(request.ToString());
             Debug.Print("RawUrl: " + request.RawUrl + " Url: " + request.Url);
@@ -102,7 +96,7 @@ namespace XawRemoteServer
             // Obtain a response object.
             HttpListenerResponse response = context.Response;
 
-            
+             
             // Construct a response. 
             string responseString = msg;// "turtle.forward()";//this.ContentBox.Text; 
             Debug.Print("ResponseString: "+responseString);
