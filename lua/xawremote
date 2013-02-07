@@ -1,20 +1,21 @@
 print("Starting xawremote... ")
-serverUrl = "http://localhost:8888/cc/"
+serverUrl = "http://localhost:8888/cc"
 
-isdebug = false
+isdebug = true
 
 oldprint = print
 
 function debugprint(str)
-	if isdebug do
-		oldprint(str)
+	if isdebug then
+		oldprint("<>"..str)
 	end
 end
 
 function sendRequest(retValue)
-        local label = os.getComputerLabel()
+        local label = os.getComputerLabel() or "nolabel"
 		retValue = retValue or "null"
-		local request = serverUrl..label.."?param="..retValue
+		
+		local request = serverUrl.."?label="..label.."&param="..retValue
 		debugprint("-- send request:")
 		debugprint(request)
 		http.request(request)
@@ -26,8 +27,9 @@ function encode (s)
   s = string.gsub(s, " ", "+")
   return s
 end
-function wait()
-        debugprint("nothing to do here .. ")
+function wait(msg)
+		msg = msg or ""
+        debugprint("nothing to do here .. "..msg)
         os.sleep(1)
 end
  
@@ -35,14 +37,14 @@ function waitForAnswer()
         while true do
                 local event, host, params = os.pullEvent()
                 if event == "http_failure" then
-                        wait()
+                        wait(event)
                         sendRequest("waiting")
                 else
                    if event == "http_success" then
 						param = params.readAll()
 						output = "success"
                         if param == "wait" then
-                                wait()
+                                wait("sent to wait")
                         else
 							-- print ("host: "..host.." params: "..param)
 							f = assert(loadstring(param, output))

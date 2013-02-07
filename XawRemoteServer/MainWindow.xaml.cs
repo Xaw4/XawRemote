@@ -24,8 +24,8 @@ namespace XawRemoteServer
     {
 
         private String msg=null;
-        private List<string> commandque = new List<string>();
         private HttpListener _listener = null;
+        private FriendManager manager = new FriendManager();
         
         public MainWindow()
         {
@@ -37,8 +37,6 @@ namespace XawRemoteServer
             if (_listener == null)
             {
                 _listener = new HttpListener();
-                //_listener.Prefixes.Add("http://localhost:8888/");
-                //_listener.Prefixes.Add("http://84.145.58.17:8888/");
                 _listener.Prefixes.Add("http://+:8888/cc/");
                 
                 _listener.Start();
@@ -46,6 +44,15 @@ namespace XawRemoteServer
             return _listener;
         }
 
+        public String gettext()
+        {
+            return this.ExpressionBox.Text.ToString();
+        }
+
+        /******************************************************
+         * Button - functions
+         * 
+         * ***/
         private void Start_Click(object sender, RoutedEventArgs e)
         {
 
@@ -53,14 +60,9 @@ namespace XawRemoteServer
 
             //if (listener == null) listener = new TcpListener(8888);
 
-            
             msg = gettext();
-            Debug.Print("msg: " + msg);
-            AsyncCallback callback = MessageRecieved;
-
-            IAsyncResult result =
-                GetListener().BeginGetContext(callback, GetListener());
-
+            beginNewContext();
+            
             Debug.Print("prefixes: ");
             foreach (String s in GetListener().Prefixes)
             {
@@ -69,30 +71,55 @@ namespace XawRemoteServer
             Debug.Print("isListening: " + GetListener().IsListening);
             
         }
+
         private void Send_Click(object sender, RoutedEventArgs e)
         {
-            Debug.Print("send_click");
+            String testTurtleLabel = "hubert";
+            manager.execCommand(testTurtleLabel, gettext());
         }
-        public String gettext()
+
+        /*
+         * Network Functions
+         */
+        private void beginNewContext()
         {
-            return this.ExpressionBox.Text.ToString();
+            Debug.Print("msg: " + msg);
+            AsyncCallback callback = MessageRecieved;
+
+            IAsyncResult result =
+                GetListener().BeginGetContext(callback, GetListener());
+
         }
+
         private void MessageRecieved(IAsyncResult result)
         {
-            Debug.Print("Message!");
-            HttpListener listener = (HttpListener)result.AsyncState;
-            // Call EndGetContext to complete the asynchronous operation.
-            HttpListenerContext context = listener.EndGetContext(result);
-            
-            HttpListenerRequest request = context.Request;
-            Debug.Print(request.ToString());
-            Debug.Print("RawUrl: " + request.RawUrl + " Url: " + request.Url);
-            Debug.Print("Method: " + request.HttpMethod);
-            Debug.Print("QueryString: " + request.QueryString + " len: " + request.QueryString.Count);
-            foreach (String s in request.QueryString.AllKeys)
+            try
             {
-                Console.WriteLine("   {0,-10} {1}", s, request.QueryString[s]);
+                Debug.Print("Message!");
+                HttpListener listener = (HttpListener)result.AsyncState;
+                // Call EndGetContext to complete the asynchronous operation.
+                HttpListenerContext context = listener.EndGetContext(result);
+            
+                HttpListenerRequest request = context.Request;
+                Debug.Print(request.ToString());
+                Debug.Print("RawUrl: " + request.RawUrl + " Url: " + request.Url);
+                Debug.Print("Method: " + request.HttpMethod);
+                Debug.Print("QueryString: " + request.QueryString + " len: " + request.QueryString.Count);
+                foreach (String s in request.QueryString.AllKeys)
+                {
+                    Console.WriteLine("   {0,-10} {1}", s, request.QueryString[s]);
+                }
+                String ccLabel = request.QueryString["label"];
+                manager.handleRequest(ccLabel, context);
+
+                beginNewContext();
+
             }
+            catch (System.Exception ex)
+            {
+                Debug.Print("Excepion in MainWindow.MessageRecieved: {0}", ex);
+            }
+            /*
             // Obtain a response object.
             HttpListenerResponse response = context.Response;
 
@@ -106,7 +133,7 @@ namespace XawRemoteServer
             System.IO.Stream output = response.OutputStream;
             output.Write(buffer, 0, buffer.Length);
             // You must close the output stream.
-            output.Close();
+            output.Close();*/
 
         }
     }

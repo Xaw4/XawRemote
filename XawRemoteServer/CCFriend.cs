@@ -7,6 +7,9 @@ using System.Diagnostics;
 
 namespace XawRemoteServer
 {
+    /************************************************************************/
+    /* A Class espetially dedicated to one Computer/Turtle                                                                     */
+    /************************************************************************/
     class CCFriend
     {
         public String Label { get; private set; }
@@ -30,18 +33,26 @@ namespace XawRemoteServer
 
         public void handleRequest(HttpListenerContext context)
         {
-            if (isIdle())
+            try
             {
-                // need to do something more inteligent, to prevent request-spamming
-                // -- i want to make it wait on server side, not on client(cc)-side
-                sendMessage("wait", context.Response);
-            }
-            else
-            {
-                String message = CommandQue.Dequeue();
-                sendMessage(message, context.Response);
+                if (isIdle())
+                {
+                    // need to do something more inteligent, to prevent request-spamming
+                    // -- i want to make it wait on server side, not on client(cc)-side
+                    sendMessage("wait", context.Response);
+                }
+                else
+                {
+                    String message = CommandQue.Dequeue();
+                    sendMessage(message, context.Response);
 
+                }
             }
+            catch (System.Exception ex)
+            {
+                Debug.Print("Excepion in CCFriend.handleRequest: {0}", ex);
+            }
+                
 
         }
 
