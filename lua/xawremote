@@ -1,7 +1,7 @@
 print("Starting xawremote... ")
 serverUrl = "http://localhost:8888/cc"
 
-isdebug = true
+isdebug = false
 
 oldprint = print
 
