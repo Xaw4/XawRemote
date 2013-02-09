@@ -26,7 +26,7 @@ namespace XawRemoteServer
         private String msg=null;
         private HttpListener _listener = null;
         private FriendManager manager = new FriendManager();
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -44,15 +44,23 @@ namespace XawRemoteServer
             return _listener;
         }
 
-        public String gettext()
+        public String getText()
         {
             return this.ExpressionBox.Text.ToString();
+        }
+        
+        
+        private String getTurtleLabel()
+        {
+            String label = TurtleBox.SelectedValue as String;
+
+            return label;
+            
         }
 
         /******************************************************
          * Button - functions
-         * 
-         * ***/
+         ***************************/
         private void Start_Click(object sender, RoutedEventArgs e)
         {
 
@@ -60,27 +68,43 @@ namespace XawRemoteServer
 
             //if (listener == null) listener = new TcpListener(8888);
 
-            msg = gettext();
+            msg = getText();
             beginNewContext();
-            
+
             Debug.Print("prefixes: ");
             foreach (String s in GetListener().Prefixes)
             {
-                Debug.Print("- "+s);
+                Debug.Print("- " + s);
             }
             Debug.Print("isListening: " + GetListener().IsListening);
-            
         }
-
+            
         private void Send_Click(object sender, RoutedEventArgs e)
         {
-            String testTurtleLabel = "hubert";
-            manager.execCommand(testTurtleLabel, gettext());
+            sendCommandToSelectedComputer(getText());
         }
 
-        /*
+
+        private void TurtleBox_opened(object sender, EventArgs e)
+        {
+            ComboBox turtleBox = sender as ComboBox;
+
+            TurtleBox.ItemsSource = manager.getLables();
+        }
+
+        private void TurtleControl_Click(object sender, EventArgs e)
+        {
+            
+           TurtleControlWindow tWindow = new TurtleControlWindow();
+           tWindow.Owner = this;
+            
+
+            tWindow.Show();
+        }
+
+        /*********************************************
          * Network Functions
-         */
+         ********************************************/
         private void beginNewContext()
         {
             Debug.Print("msg: " + msg);
@@ -119,22 +143,18 @@ namespace XawRemoteServer
             {
                 Debug.Print("Excepion in MainWindow.MessageRecieved: {0}", ex);
             }
-            /*
-            // Obtain a response object.
-            HttpListenerResponse response = context.Response;
-
-             
-            // Construct a response. 
-            string responseString = msg;// "turtle.forward()";//this.ContentBox.Text; 
-            Debug.Print("ResponseString: "+responseString);
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-            // Get a response stream and write the response to it.
-            response.ContentLength64 = buffer.Length;
-            System.IO.Stream output = response.OutputStream;
-            output.Write(buffer, 0, buffer.Length);
-            // You must close the output stream.
-            output.Close();*/
-
+            
         }
+
+        public void sendCommandToSelectedComputer(String command)
+        {
+            String turtleLable = getTurtleLabel();
+            if (turtleLable != null)
+            {
+                manager.execCommand(turtleLable, command);
+                Debug.Print("Sent |{0}| to |{1}|", turtleLable, command);
+            }
+        }
+
     }
 }

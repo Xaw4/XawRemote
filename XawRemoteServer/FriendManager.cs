@@ -14,6 +14,11 @@ namespace XawRemoteServer
     {
         private Dictionary<String, CCFriend> friends = new Dictionary<String, CCFriend>();
 
+        public String[] getLables()
+        {
+            return friends.Keys.ToArray<String>();
+        }
+
         public void handleRequest(String label, HttpListenerContext context)
         {
             try

@@ -5,8 +5,19 @@
     <DockPanel>
         <Button Content="start" Click="Start_Click" />
         <Button Content="send" Click="Send_Click" />
-        <TextBox Name="ExpressionBox"
-                 IsReadOnly="false" 
-                 AcceptsReturn="True">turtle.forward()</TextBox>
+        <StackPanel DockPanel.Dock="Left" Name="pastersPanel" Orientation="Vertical">
+
+            <DockPanel>
+                <Button   Content="TurtleControl" Click="TurtleControl_Click" />
+                <ComboBox Name="TurtleBox" DropDownOpened="TurtleBox_opened" />
+            </DockPanel>
+            <TextBox Name="ExpressionBox"
+                IsReadOnly="false" 
+                AcceptsReturn="True">
+                turtle.forward()
+            </TextBox>
+            
+
+        </StackPanel>
     </DockPanel>
 </Window>
